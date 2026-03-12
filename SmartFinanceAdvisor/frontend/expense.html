@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Expense Tracker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<h2>Expense Tracker</h2>
+
+<button onclick="loadExpenses()">Load Expenses</button>
+
+<br><br>
+
+<table border="1">
+
+<thead>
+<tr>
+<th>Expense</th>
+<th>Amount</th>
+</tr>
+</thead>
+
+<tbody id="expenseTable"></tbody>
+
+</table>
+
+<br><br>
+
+<h3>Spending Chart</h3>
+
+<canvas id="expenseChart" width="400" height="200"></canvas>
+
+<script>
+
+let chart = null;
+
+function loadExpenses(){
+
+fetch("http://localhost:8080/SmartFinanceAdvisor/viewExpenses")
+
+.then(response => response.json())
+
+.then(data => {
+
+let table = document.getElementById("expenseTable");
+table.innerHTML="";
+
+let names=[];
+let amounts=[];
+
+data.forEach(exp => {
+
+let row="<tr><td>"+exp.name+"</td><td>"+exp.amount+"</td></tr>";
+table.innerHTML+=row;
+
+names.push(exp.name);
+amounts.push(exp.amount);
+
+});
+
+drawChart(names,amounts);
+
+});
+
+}
+
+function drawChart(names,amounts){
+
+const ctx=document.getElementById("expenseChart");
+
+if(chart!=null){
+chart.destroy();
+}
+
+chart=new Chart(ctx,{
+type:"bar",
+data:{
+labels:names,
+datasets:[{
+label:"Expenses",
+data:amounts
+}]
+}
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
